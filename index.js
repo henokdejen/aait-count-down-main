@@ -11,10 +11,19 @@ const baseURL = "https://api.telegram.org/bot" + token;
 const CHANNEL_ID = -1001222522518;
 
 app.get("/", (req, res) => {
-  fs.appendFile("./log.txt", "Hello content!", function (err) {
-    // if (err) throw err;
-    console.log("Saved!");
-  });
+    axios
+    .post(baseURL + "/sendMessage", {
+      chat_id: CHANNEL_ID,
+      text: "Polo!!",
+    })
+    .then((response) => {
+      // We get here if the message was successfully posted
+      console.log("Message posted");
+    })
+    .catch((err) => {
+      // ...and here if it was not
+      console.log("Error :", err);
+    });
   res.json({ success: true });
 });
 
@@ -23,11 +32,7 @@ app.use(
   bodyParser.urlencoded({
     extended: true,
   })
-); // for parsing application/x-www-form-urlencoded
-
-//This is the route the API will call
-
-// cron.schedule('* * * * *', () => {
+)
 console.log("running a task every minute");
 setInterval(function () {
   axios
@@ -45,11 +50,5 @@ setInterval(function () {
     });
 }, 20000);
 
-// });
-
-// Finally, start our server
-// app.listen(3000, function () {
-//     console.log('Telegram app listening on port 3000!')
-// })
 
 export default app;
