@@ -1,0 +1,25 @@
+{
+  "name": "aait-count-down-main",
+  "version": "1.0.0",
+  "description": "this bot will be used to post count down for the 2020 AAiT graduation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henokdejen/aait-count-down-main.git"
+  },
+  "author": "Henok Dejen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/henokdejen/aait-count-down-main/issues"
+  },
+  "homepage": "https://github.com/henokdejen/aait-count-down-main#readme",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "node-cron": "^2.0.3"
+  }
+}
