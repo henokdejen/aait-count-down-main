@@ -1,54 +1,48 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
 const axios = require("axios");
-var cron = require("node-cron");
-var fs = require("fs");
+require("dotenv").config();
+const { DateTime } = require("luxon");
 
-const token = "1458584558:AAGUuM3gufVo12JFTMqSOKoe2qAgpKhLaTk";
-const baseURL = "https://api.telegram.org/bot" + token;
+const baseURL = "https://api.telegram.org/bot" + process.env.TELEGRAM_TOKEN;
+const CHANNEL_ID = process.env.CHANNEL_ID;
+const end_date = DateTime.fromISO("2020-12-17T00:00:00");
 
-const CHANNEL_ID = -1001222522518;
+let last_message_id = null;
 
-app.get("/", (req, res) => {
-    axios
-    .post(baseURL + "/sendMessage", {
-      chat_id: CHANNEL_ID,
-      text: "Polo!!",
-    })
-    .then((response) => {
-      // We get here if the message was successfully posted
-      console.log("Message posted");
-    })
-    .catch((err) => {
-      // ...and here if it was not
-      console.log("Error :", err);
-    });
-  res.json({ success: true });
-});
+const sendOrEditMessage = (text) => {
+  let isNew = last_message_id == null;
+  let url = baseURL + (isNew ? "/sendMessage" : "/editMessageText");
+  let data = {
+    chat_id: CHANNEL_ID,
+    text: text,
+  };
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
-console.log("running a task every minute");
-setInterval(function () {
+  if (!isNew) {
+    data.message_id = last_message_id;
+  }
+
   axios
-    .post(baseURL + "/sendMessage", {
-      chat_id: CHANNEL_ID,
-      text: "Polo!!",
-    })
+    .post(url, data)
     .then((response) => {
-      // We get here if the message was successfully posted
-      console.log("Message posted");
+      let { data } = response;
+      if (data.ok && isNew) {
+        last_message_id = data.result.message_id;
+      }
     })
     .catch((err) => {
-      // ...and here if it was not
-      console.log("Error :", err);
+      // console.log("Error :", err);
     });
-}, 20000);
+};
 
-
-// export default app;
+setInterval(function () {
+  // makenanes
+  let diff = end_date.diff(DateTime.utc(), [
+    "days",
+    "hours",
+    "minutes",
+    "seconds",
+  ]);
+  const { days, hours, minutes, seconds } = diff.values;
+  sendOrEditMessage(
+    `Graduation countdown ${days} day(s), ${hours} hour(s), ${minutes} minute(s)`
+  );
+}, 2000);
